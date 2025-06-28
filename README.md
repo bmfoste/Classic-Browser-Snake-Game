@@ -29,6 +29,10 @@ License code: ITM4WUP6D36GMJWZ
 4. Eat food to grow the snake and increase your score.
 5. Avoid collisions with the walls or the snake's own body.
 
+### Play Online
+You can play the game directly in your browser by visiting:  
+[Classic Browser Snake Game](https://bmfoste.github.io/Classic-Browser-Snake-Game/)
+
 ## Development
 ### Setup
 1. Clone the repository.
