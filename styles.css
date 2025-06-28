@@ -1,0 +1,25 @@
+/*
+Author: Brent Foster
+Email: brent.brentfoster.me
+LinkedIn: http://linkedin.com/in/engineeringthefuture/
+GitHub: https://github.com/bmfoste
+*/
+
+body {
+    font-family: Arial, sans-serif;
+    text-align: center;
+    margin: 0;
+    padding: 0;
+    background-color: #f4f4f4;
+}
+
+h1 {
+    color: #333;
+}
+
+canvas {
+    border: 1px solid #333;
+    background-color: #fff;
+    display: block;
+    margin: 20px auto;
+}

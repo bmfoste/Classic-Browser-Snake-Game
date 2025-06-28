@@ -1,0 +1,33 @@
+# Ignore macOS DS_Store files
+.DS_Store
+
+# Node.js dependencies
+node_modules/
+
+# Logs
+*.log
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+
+# Environment variables
+.env
+
+# Build files
+dist/
+build/
+
+# Temporary files
+*.tmp
+*.swp
+
+# IDE files
+.vscode/
+.idea/
+
+# Coverage reports
+coverage/
+
+# Generated files
+*.min.js
+*.map

@@ -1,0 +1,19 @@
+{
+    "name": "classic-browser-snake-game",
+    "version": "1.0.0",
+    "description": "",
+    "main": "script.js",
+    "scripts": {
+        "test": "jest"
+    },
+    "keywords": [],
+    "author": "",
+    "license": "ISC",
+    "devDependencies": {
+        "jest": "^30.0.3",
+        "jest-environment-jsdom": "^30.0.2"
+    },
+    "jest": {
+        "testEnvironment": "jsdom"
+    }
+}

@@ -1,0 +1,42 @@
+<!--
+Author: Brent Foster
+Email: brent.brentfoster.me
+LinkedIn: http://linkedin.com/in/engineeringthefuture/
+GitHub: https://github.com/bmfoste
+-->
+
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Classic Snake Game</title>
+    <link rel="stylesheet" href="styles.css">
+    <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><circle cx='50' cy='50' r='50' fill='yellow'/><circle cx='35' cy='35' r='10' fill='black'/><circle cx='65' cy='35' r='10' fill='black'/><path d='M35 65 Q50 80 65 65' stroke='black' fill='transparent' stroke-width='3'/></svg>'">
+</head>
+
+<body>
+    <h1>Classic Snake Game</h1>
+    <canvas id="gameCanvas" width="400" height="400"></canvas>
+    <div id="highScores" style="text-align: center; font-family: Arial, sans-serif; font-size: 16px; color: black; margin-top: 20px;">
+        <h2>High Scores</h2>
+        <ul id="highScoresList" style="list-style: none; padding: 0; margin: 0; display: inline-block; text-align: left;"></ul>
+    </div>
+    <script src="script.js"></script>
+    <script>
+        // Update drawHighScores to populate the high scores div
+        function drawHighScores() {
+            const highScoresList = document.getElementById('highScoresList');
+            highScoresList.innerHTML = '';
+            const medals = ['🥇', '🥈', '🥉'];
+            highScores.forEach((entry, index) => {
+                const listItem = document.createElement('li');
+                listItem.textContent = `${medals[index]} ${entry.name}: ${entry.score}`;
+                highScoresList.appendChild(listItem);
+            });
+        }
+    </script>
+</body>
+
+</html>
