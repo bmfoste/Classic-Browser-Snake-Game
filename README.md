@@ -1,11 +1,5 @@
 # Classic Snake Game
 
-## Author Information
-Brent Foster  
-Email: brent.brentfoster.me  
-LinkedIn: http://linkedin.com/in/engineeringthefuture/  
-GitHub: https://github.com/bmfoste  
-
 ## Overview
 This project implements a classic snake game using HTML, CSS, and JavaScript. The game features a movable snake, food items represented by emojis, and a high score board. This game was created as an experiment to explore the capabilities of GitHub Copilot running in Agent mode, utilizing GPT-4o for enhanced coding assistance and automation within Visual Studio Code. 
 
@@ -65,6 +59,7 @@ graph TD
     A -->|Plays| I[8-bit Music]
     A -->|Shows| J[Game Start Message]
     A -->|Handles| K[Keyboard Input]
+```
 
 ## Future Enhancements
 - Add special effects.
@@ -73,6 +68,32 @@ graph TD
 
 ## License
 This project is licensed under the MIT License.
+
+## Best Practices for Prompting in Software Engineering
+
+When using tools like GitHub Copilot or other AI-powered assistants, crafting effective prompts is key to achieving optimal results. Here are some best practices for prompting in software engineering:
+
+1. **Be Specific**: Clearly define the task or functionality you want to implement. Avoid vague or ambiguous prompts.
+   - Example: "Create a function to calculate the factorial of a number using recursion."
+
+2. **Provide Context**: Include relevant details about the project or the problem you're solving.
+   - Example: "In a snake game, implement collision detection logic to end the game when the snake hits the wall or itself."
+
+3. **Break Down Complex Tasks**: Divide large tasks into smaller, manageable steps.
+   - Example: Instead of asking for "Build a complete snake game," start with "Create the HTML structure for the game canvas."
+
+4. **Use Examples**: Provide sample inputs and expected outputs to clarify your requirements.
+   - Example: "Write a function that takes an array of numbers and returns the sum. For example, input [1, 2, 3] should return 6."
+
+5. **Iterate and Refine**: Review the generated code and refine your prompts as needed to improve the results.
+   - Example: If the initial prompt generates incomplete code, follow up with "Add error handling to the function."
+
+6. **Ask for Documentation**: Request comments or explanations to ensure the code is well-documented and easy to understand.
+   - Example: "Generate a function to sort an array and include comments explaining each step."
+
+7. **Test the Code**: Always test the generated code to ensure it works as expected and meets your requirements.
+
+By following these best practices, you can effectively leverage AI tools to enhance your software engineering workflows and achieve better outcomes.
 
 ## Using GitHub Copilot to Generate the Game
 
@@ -113,5 +134,3 @@ GitHub Copilot can assist in generating the Classic Snake Game by providing code
 - Use clear and concise prompts to guide Copilot.
 - Review and test the generated code to ensure it meets your requirements.
 - Combine Copilot's suggestions with your own logic for optimal results.
-
-GitHub Copilot is a powerful tool for accelerating development and exploring creative solutions.
