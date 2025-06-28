@@ -120,6 +120,9 @@ function checkCollision(snake, canvasSize) {
 // Add a flag to track whether the game has started
 let gameStarted = false;
 
+// Add a flag to prevent multiple alerts when the game ends
+let gameOver = false;
+
 // Add a high score board
 let highScores = [];
 
@@ -209,6 +212,28 @@ window.addEventListener('keydown', () => {
     }
 });
 
+// Ensure the game starts when an arrow key or button is pressed
+window.addEventListener('keydown', e => {
+    if (!gameStarted && ['ArrowUp', 'ArrowDown', 'ArrowLeft', 'ArrowRight'].includes(e.key)) {
+        gameStarted = true;
+    }
+
+    switch (e.key) {
+        case 'ArrowUp':
+            if (direction !== 'down') direction = 'up';
+            break;
+        case 'ArrowDown':
+            if (direction !== 'up') direction = 'down';
+            break;
+        case 'ArrowLeft':
+            if (direction !== 'right') direction = 'left';
+            break;
+        case 'ArrowRight':
+            if (direction !== 'left') direction = 'right';
+            break;
+    }
+});
+
 // Add an info icon and modal window for game instructions
 const infoIcon = document.createElement('button');
 infoIcon.textContent = 'ℹ️';
@@ -271,14 +296,40 @@ function getHighScores() {
     return highScores;
 }
 
-// Main game loop
-// This function will be called repeatedly to update the game state
-// and render the graphics
-// It will also handle the game start state and display messages
-// when the game is not started yet.
-// The game loop will also check for collisions and update the score.
-// If the game is over, it will prompt the user to enter their name
-// and update the high scores accordingly.
+// Add a keypad for mobile devices
+function createMobileKeypad() {
+    const keypadContainer = document.createElement('div');
+    keypadContainer.style.position = 'absolute';
+    keypadContainer.style.bottom = '20px';
+    keypadContainer.style.left = '50%';
+    keypadContainer.style.transform = 'translateX(-50%)';
+    keypadContainer.style.display = 'flex';
+    keypadContainer.style.justifyContent = 'center';
+    keypadContainer.style.gap = '10px';
+
+    const directions = ['ArrowUp', 'ArrowLeft', 'ArrowDown', 'ArrowRight'];
+    directions.forEach(direction => {
+        const button = document.createElement('button');
+        button.textContent = direction.replace('Arrow', '');
+        button.style.padding = '10px 20px';
+        button.style.fontSize = '16px';
+        button.style.border = '1px solid #333';
+        button.style.borderRadius = '5px';
+        button.style.backgroundColor = '#f4f4f4';
+        button.style.cursor = 'pointer';
+
+        button.addEventListener('click', () => {
+            const event = new KeyboardEvent('keydown', { key: direction });
+            window.dispatchEvent(event);
+        });
+
+        keypadContainer.appendChild(button);
+    });
+
+    document.body.appendChild(keypadContainer);
+}
+
+// Move the gameLoop function definition above the window.onload function
 function gameLoop() {
     if (!gameStarted) {
         ctx.clearRect(0, 0, canvasSize, canvasSize);
@@ -294,9 +345,12 @@ function gameLoop() {
     }
 
     if (checkCollision(snake, canvasSize)) {
-        alert(`Game Over! Your score: ${score}`);
-        updateHighScores(score);
-        document.location.reload();
+        if (!gameOver) {
+            gameOver = true;
+            alert(`Game Over! Your score: ${score}`);
+            updateHighScores(score);
+            document.location.reload();
+        }
         return;
     }
 
@@ -314,44 +368,33 @@ function gameLoop() {
     drawHighScores();
 }
 
-// Listen for key presses
-window.addEventListener('keydown', e => {
-    if (!gameStarted) gameStarted = true;
-    switch (e.key) {
-        case 'ArrowUp':
-            if (direction !== 'down') direction = 'up';
-            break;
-        case 'ArrowDown':
-            if (direction !== 'up') direction = 'down';
-            break;
-        case 'ArrowLeft':
-            if (direction !== 'right') direction = 'left';
-            break;
-        case 'ArrowRight':
-            if (direction !== 'left') direction = 'right';
-            break;
-    }
-});
-
 // Ensure the canvas is initialized when the page loads
 window.onload = () => {
     const canvas = document.getElementById('gameCanvas');
     initializeCanvas(canvas);
     food = placeFood(canvasSize, gridSize);
     loadHighScores();
+
+    // Create the keypad for mobile devices
+    if (/Mobi|Android/i.test(navigator.userAgent)) {
+        createMobileKeypad();
+    }
+
     setInterval(gameLoop, 100);
 };
 
-// Export the initialization function
-module.exports = {
-    initializeCanvas,
-    moveSnake,
-    checkCollision,
-    placeFood,
-    drawSnake,
-    drawFood,
-    updateHighScores,
-    drawHighScores,
-    loadHighScores, // Add loadHighScores to exports
-    getHighScores, // Add getHighScores to exports
-};
+// Ensure module.exports is only used in Node.js environments
+if (typeof module !== 'undefined' && module.exports) {
+    module.exports = {
+        initializeCanvas,
+        moveSnake,
+        checkCollision,
+        placeFood,
+        drawSnake,
+        drawFood,
+        updateHighScores,
+        drawHighScores,
+        loadHighScores,
+        getHighScores,
+    };
+}
