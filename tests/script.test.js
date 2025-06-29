@@ -5,7 +5,7 @@ LinkedIn: http://linkedin.com/in/engineeringthefuture/
 GitHub: https://github.com/bmfoste
 */
 
-const { moveSnake, checkCollision, placeFood, initializeCanvas, updateHighScores, drawHighScores, loadHighScores, getHighScores } = require('../script');
+const { moveSnake, checkCollision, placeFood, initializeCanvas, updateHighScores, drawHighScores, loadHighScores, getHighScores, createMultitouchControls, handleTouch } = require('../script');
 
 // Mock the canvas context
 const mockCtx = {
@@ -113,6 +113,13 @@ beforeEach(() => {
     console.log('Initialized High Scores:', highScores);
 });
 
+// Mock the direction variable for testing
+let direction = 'right';
+
+beforeEach(() => {
+    direction = 'right'; // Reset direction before each test
+});
+
 // Refine test expectations for updateHighScores
 describe('updateHighScores', () => {
 
@@ -134,5 +141,42 @@ describe('updateHighScores', () => {
 
         // Add an expect to verify Dave is contained in the high scores list with a score of 60
         expect(getHighScores()).toContainEqual({ score: 800, name: 'Brent' });
+    });
+});
+
+// Mock the DOM structure for multitouch controls
+let touchArea;
+beforeAll(() => {
+    document.body.innerHTML = '<div id="gameCanvas"></div>';
+    touchArea = document.createElement('div');
+    touchArea.style.width = '300px';
+    touchArea.style.height = '150px';
+    document.body.appendChild(touchArea);
+});
+
+describe('Multitouch Controls', () => {
+    test('should create multitouch controls', () => {
+        createMultitouchControls();
+        expect(document.getElementById('touchArea')).not.toBeNull();
+    });
+
+    test('should update direction based on touch position', () => {
+        const mockEvent = {
+            preventDefault: jest.fn(),
+            touches: [
+                { clientX: 50, clientY: 0 },
+            ],
+            currentTarget: {
+                getBoundingClientRect: () => ({
+                    left: 0,
+                    top: 0,
+                    width: 300,
+                    height: 150,
+                }),
+            },
+        };
+
+        handleTouch(mockEvent);
+        expect(direction).toBe('right');
     });
 });

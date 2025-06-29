@@ -234,6 +234,15 @@ window.addEventListener('keydown', e => {
     }
 });
 
+// Add touchstart event listener to start the game on touch
+window.addEventListener('touchstart', () => {
+    // Only start the game if it hasn't started yet and the touch happens inside the touch area by first checking if the touch happens within the touch area
+    const touchArea = document.querySelector('div[style*="touch-action: none"]');
+    if (touchArea && !gameStarted && touchArea.contains(event.target)) {
+        gameStarted = true;
+    }
+});
+
 // Add an info icon and modal window for game instructions
 const infoIcon = document.createElement('button');
 infoIcon.textContent = 'ℹ️';
@@ -274,7 +283,8 @@ modalContent.style.textAlign = 'center';
 modalContent.style.width = '80%';
 modalContent.innerHTML = `
     <h2>Game Instructions</h2>
-    <p>Use the arrow keys to control the snake.</p>
+    <p>Use the arrow keys or touch gestures to control the snake.</p>
+    <p>Swipe up, down, left, or right within the touch area to move the snake.</p>
     <p>Eat food to grow the snake and increase your score.</p>
     <p>Avoid collisions with the walls or the snake's own body.</p>
     <button id="closeModal" style="margin-top: 20px; padding: 10px 20px; font-size: 16px; cursor: pointer;">Close</button>
@@ -296,37 +306,49 @@ function getHighScores() {
     return highScores;
 }
 
-// Add a keypad for mobile devices
-function createMobileKeypad() {
-    const keypadContainer = document.createElement('div');
-    keypadContainer.style.position = 'absolute';
-    keypadContainer.style.bottom = '20px';
-    keypadContainer.style.left = '50%';
-    keypadContainer.style.transform = 'translateX(-50%)';
-    keypadContainer.style.display = 'flex';
-    keypadContainer.style.justifyContent = 'center';
-    keypadContainer.style.gap = '10px';
+// Ensure the touch area has the correct styles
+function createMultitouchControls() {
+    // Create a touch area for mobile devices and give it an id
+    const touchArea = document.createElement('div');
+    touchArea.id = 'touchArea';
+    touchArea.style.position = 'absolute';
+    touchArea.style.bottom = '150px';
+    touchArea.style.left = '50%';
+    touchArea.style.transform = 'translateX(-50%)';
+    touchArea.style.width = '300px';
+    touchArea.style.height = '150px';
+    touchArea.style.backgroundColor = 'rgba(0, 0, 0, 0.1)';
+    touchArea.style.borderRadius = '10px';
+    touchArea.style.touchAction = 'none';
 
-    const directions = ['ArrowUp', 'ArrowLeft', 'ArrowDown', 'ArrowRight'];
-    directions.forEach(direction => {
-        const button = document.createElement('button');
-        button.textContent = direction.replace('Arrow', '');
-        button.style.padding = '10px 20px';
-        button.style.fontSize = '16px';
-        button.style.border = '1px solid #333';
-        button.style.borderRadius = '5px';
-        button.style.backgroundColor = '#f4f4f4';
-        button.style.cursor = 'pointer';
+    touchArea.addEventListener('touchstart', handleTouch);
+    touchArea.addEventListener('touchmove', handleTouch);
 
-        button.addEventListener('click', () => {
-            const event = new KeyboardEvent('keydown', { key: direction });
-            window.dispatchEvent(event);
-        });
+    document.body.appendChild(touchArea);
+}
 
-        keypadContainer.appendChild(button);
-    });
+// Refine the handleTouch function to ensure proper direction updates
+function handleTouch(event) {
+    event.preventDefault();
+    const touchArea = event.currentTarget;
+    const rect = touchArea.getBoundingClientRect();
 
-    document.body.appendChild(keypadContainer);
+    for (let i = 0; i < event.touches.length; i++) {
+        const touch = event.touches[i];
+        const x = touch.clientX - rect.left;
+        const y = touch.clientY - rect.top;
+
+        // Determine direction based on touch position within the touch area
+        if (y < rect.height / 3 && direction !== 'down') {
+            direction = 'up';
+        } else if (y > (2 * rect.height) / 3 && direction !== 'up') {
+            direction = 'down';
+        } else if (x < rect.width / 3 && direction !== 'right') {
+            direction = 'left';
+        } else if (x > (2 * rect.width) / 3 && direction !== 'left') {
+            direction = 'right';
+        }
+    }
 }
 
 // Move the gameLoop function definition above the window.onload function
@@ -368,6 +390,17 @@ function gameLoop() {
     drawHighScores();
 }
 
+// Adjust the high scores position for mobile devices
+function adjustHighScoresPosition() {
+    const highScoresElement = document.getElementById('highScores');
+    if (/Mobi|Android/i.test(navigator.userAgent)) {
+        highScoresElement.style.position = 'absolute';
+        highScoresElement.style.bottom = '20px';
+        highScoresElement.style.left = '50%';
+        highScoresElement.style.transform = 'translateX(-50%)';
+    }
+}
+
 // Ensure the canvas is initialized when the page loads
 window.onload = () => {
     const canvas = document.getElementById('gameCanvas');
@@ -377,13 +410,15 @@ window.onload = () => {
 
     // Create the keypad for mobile devices
     if (/Mobi|Android/i.test(navigator.userAgent)) {
-        createMobileKeypad();
+        createMultitouchControls();
     }
+
+    adjustHighScoresPosition();
 
     setInterval(gameLoop, 100);
 };
 
-// Ensure module.exports is only used in Node.js environments
+// Export the direction variable for testing
 if (typeof module !== 'undefined' && module.exports) {
     module.exports = {
         initializeCanvas,
@@ -396,5 +431,8 @@ if (typeof module !== 'undefined' && module.exports) {
         drawHighScores,
         loadHighScores,
         getHighScores,
+        createMultitouchControls,
+        handleTouch,
+        direction,
     };
 }

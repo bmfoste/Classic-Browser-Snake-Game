@@ -29,6 +29,13 @@ License code: ITM4WUP6D36GMJWZ
 4. Eat food to grow the snake and increase your score.
 5. Avoid collisions with the walls or the snake's own body.
 
+### Updated Mobile Instructions
+- Use the arrow keys or touch gestures to control the snake.
+- Swipe up, down, left, or right within the touch area to move the snake.
+- The touch area is located just below the game canvas.
+- The game starts automatically when you touch the screen.
+- High scores are displayed below the touch area for easy access.
+
 ### Play Online
 You can play the game directly in your browser by visiting:  
 [Classic Browser Snake Game](https://bmfoste.github.io/Classic-Browser-Snake-Game/)
