@@ -78,13 +78,14 @@ describe('checkCollision', () => {
 // Test placeFood function
 describe('placeFood', () => {
     test('should place food within the canvas boundaries', () => {
-        const canvasSize = 400;
+        const canvasWidth = 400;
+        const canvasHeight = 400;
         const gridSize = 20;
-        const food = placeFood(canvasSize, gridSize);
+        const food = placeFood(0, 0, canvasWidth, canvasHeight, gridSize);
         expect(food.x).toBeGreaterThanOrEqual(0);
-        expect(food.x).toBeLessThan(canvasSize);
+        expect(food.x).toBeLessThan(canvasWidth);
         expect(food.y).toBeGreaterThanOrEqual(0);
-        expect(food.y).toBeLessThan(canvasSize);
+        expect(food.y).toBeLessThan(canvasHeight);
     });
 });
 
@@ -155,10 +156,6 @@ beforeAll(() => {
 });
 
 describe('Multitouch Controls', () => {
-    test('should create multitouch controls', () => {
-        createMultitouchControls();
-        expect(document.getElementById('touchArea')).not.toBeNull();
-    });
 
     test('should update direction based on touch position', () => {
         const mockEvent = {

@@ -15,6 +15,10 @@ let direction = 'right';
 let food = { x: gridSize * 5, y: gridSize * 5 };
 let score = 0;
 
+// Update audio element to use the mp3 file in the assets folder
+const audio = new Audio('assets/bit-shift-kevin-macleod-main-version-24901-03-12.mp3');
+audio.loop = true;
+
 // Allow dependency injection for the canvas context
 let ctx;
 
@@ -58,12 +62,12 @@ function drawSnake() {
 // Add an array of food emojis
 const foodEmojis = ['🍎', '🍌', '🍓', '🍇', '🍍', '🥕', '🌽', '🍉'];
 
-// Update placeFood to include random food emoji
-function placeFood(canvasSize, gridSize) {
+// Update the placeFood function to accept canvas width and height instead of canvasSize
+function placeFood(canvasWidth, canvasHeight, gridSize) {
     const randomEmoji = foodEmojis[Math.floor(Math.random() * foodEmojis.length)];
     return {
-        x: Math.floor(Math.random() * (canvasSize / gridSize)) * gridSize,
-        y: Math.floor(Math.random() * (canvasSize / gridSize)) * gridSize,
+        x: Math.floor(Math.random() * (canvasWidth / gridSize)) * gridSize,
+        y: Math.floor(Math.random() * (canvasHeight / gridSize)) * gridSize,
         emoji: randomEmoji,
     };
 }
@@ -71,7 +75,8 @@ function placeFood(canvasSize, gridSize) {
 // Update drawFood to display the food emoji
 function drawFood() {
     ctx.font = '20px Arial';
-    ctx.fillText(food.emoji, food.x + gridSize / 4, food.y + gridSize * 0.75);
+    ctx.textAlign = 'center';
+    ctx.fillText(food.emoji, food.x + gridSize / 2, food.y + gridSize / 2);
 }
 
 // Update moveSnake to grow the snake when food is eaten
@@ -97,16 +102,16 @@ function moveSnake(snake, direction) {
     // Check if the snake eats the food
     if (head.x === food.x && head.y === food.y) {
         score++;
-        food = placeFood(canvasSize, gridSize);
+        food = placeFood(document.getElementById('gameCanvas').width, document.getElementById('gameCanvas').height, gridSize);
     } else {
         snake.pop(); // Remove the tail if no food is eaten
     }
 }
 
-// Refine checkCollision to detect collisions correctly
-function checkCollision(snake, canvasSize) {
+// Ensure the snake and food are contained within the canvas boundaries
+function checkCollision(snake, canvasWidth, canvasHeight) {
     const head = snake[0];
-    if (head.x < 0 || head.x >= canvasSize || head.y < 0 || head.y >= canvasSize) {
+    if (head.x < 0 || head.x >= canvasWidth || head.y < 0 || head.y >= canvasHeight) {
         return true;
     }
     for (let i = 1; i < snake.length; i++) {
@@ -174,10 +179,6 @@ function drawHighScores() {
     });
 }
 
-// Update audio element to use the mp3 file in the assets folder
-const audio = new Audio('assets/bit-shift-kevin-macleod-main-version-24901-03-12.mp3');
-audio.loop = true;
-
 // Add toggle button for music
 const musicToggleButton = document.createElement('button');
 musicToggleButton.textContent = '🔊';
@@ -231,15 +232,6 @@ window.addEventListener('keydown', e => {
         case 'ArrowRight':
             if (direction !== 'left') direction = 'right';
             break;
-    }
-});
-
-// Add touchstart event listener to start the game on touch
-window.addEventListener('touchstart', () => {
-    // Only start the game if it hasn't started yet and the touch happens inside the touch area by first checking if the touch happens within the touch area
-    const touchArea = document.querySelector('div[style*="touch-action: none"]');
-    if (touchArea && !gameStarted && touchArea.contains(event.target)) {
-        gameStarted = true;
     }
 });
 
@@ -306,39 +298,18 @@ function getHighScores() {
     return highScores;
 }
 
-// Ensure the touch area has the correct styles
-function createMultitouchControls() {
-    // Create a touch area for mobile devices and give it an id
-    const touchArea = document.createElement('div');
-    touchArea.id = 'touchArea';
-    touchArea.style.position = 'absolute';
-    touchArea.style.bottom = '150px';
-    touchArea.style.left = '50%';
-    touchArea.style.transform = 'translateX(-50%)';
-    touchArea.style.width = '300px';
-    touchArea.style.height = '150px';
-    touchArea.style.backgroundColor = 'rgba(0, 0, 0, 0.1)';
-    touchArea.style.borderRadius = '10px';
-    touchArea.style.touchAction = 'none';
-
-    touchArea.addEventListener('touchstart', handleTouch);
-    touchArea.addEventListener('touchmove', handleTouch);
-
-    document.body.appendChild(touchArea);
-}
-
-// Refine the handleTouch function to ensure proper direction updates
+// Define the handleTouch function to handle touch events
 function handleTouch(event) {
     event.preventDefault();
-    const touchArea = event.currentTarget;
-    const rect = touchArea.getBoundingClientRect();
+    const canvas = event.currentTarget;
+    const rect = canvas.getBoundingClientRect();
 
     for (let i = 0; i < event.touches.length; i++) {
         const touch = event.touches[i];
         const x = touch.clientX - rect.left;
         const y = touch.clientY - rect.top;
 
-        // Determine direction based on touch position within the touch area
+        // Determine direction based on touch position within the canvas
         if (y < rect.height / 3 && direction !== 'down') {
             direction = 'up';
         } else if (y > (2 * rect.height) / 3 && direction !== 'up') {
@@ -354,19 +325,20 @@ function handleTouch(event) {
 // Move the gameLoop function definition above the window.onload function
 function gameLoop() {
     if (!gameStarted) {
-        ctx.clearRect(0, 0, canvasSize, canvasSize);
+        ctx.clearRect(0, 0, document.getElementById('gameCanvas').width, document.getElementById('gameCanvas').height);
         ctx.font = '20px Arial';
         ctx.fillStyle = 'black';
-        const message = 'Press an arrow key to start!';
+        const isMobile = /Mobi|Android/i.test(navigator.userAgent);
+        const message = isMobile ? 'Touch the screen to start!' : 'Press an arrow key to start!';
         const textWidth = ctx.measureText(message).width;
-        ctx.fillText(message, (canvasSize - textWidth) / 2, canvasSize / 2);
+        ctx.fillText(message, (document.getElementById('gameCanvas').width - textWidth) / 2, document.getElementById('gameCanvas').height / 2);
 
         // Display high scores
         drawHighScores();
         return;
     }
 
-    if (checkCollision(snake, canvasSize)) {
+    if (checkCollision(snake, document.getElementById('gameCanvas').width, document.getElementById('gameCanvas').height)) {
         if (!gameOver) {
             gameOver = true;
             alert(`Game Over! Your score: ${score}`);
@@ -376,49 +348,89 @@ function gameLoop() {
         return;
     }
 
-    ctx.clearRect(0, 0, canvasSize, canvasSize);
+    ctx.clearRect(0, 0, document.getElementById('gameCanvas').width, document.getElementById('gameCanvas').height);
     drawFood();
     moveSnake(snake, direction);
     drawSnake();
 
-    // Display the score
+    // Display the score in the top-left corner
     ctx.font = '16px Arial';
     ctx.fillStyle = 'black';
+    ctx.textAlign = 'left';
     ctx.fillText(`Score: ${score}`, 10, 20);
 
     // Display the high score board
     drawHighScores();
 }
 
-// Adjust the high scores position for mobile devices
-function adjustHighScoresPosition() {
-    const highScoresElement = document.getElementById('highScores');
-    if (/Mobi|Android/i.test(navigator.userAgent)) {
-        highScoresElement.style.position = 'absolute';
-        highScoresElement.style.bottom = '20px';
-        highScoresElement.style.left = '50%';
-        highScoresElement.style.transform = 'translateX(-50%)';
-    }
-}
-
-// Ensure the canvas is initialized when the page loads
+// Ensure proper initialization of the canvas and high scores area
 window.onload = () => {
     const canvas = document.getElementById('gameCanvas');
     initializeCanvas(canvas);
-    food = placeFood(canvasSize, gridSize);
+    initializeCanvasTouchArea();
+
+    const rect = canvas.getBoundingClientRect();
+    food = placeFood(rect.width, rect.height, gridSize);
+
     loadHighScores();
-
-    // Create the keypad for mobile devices
-    if (/Mobi|Android/i.test(navigator.userAgent)) {
-        createMultitouchControls();
-    }
-
+    makeGameResponsive();
     adjustHighScoresPosition();
 
     setInterval(gameLoop, 100);
 };
 
-// Export the direction variable for testing
+// Ensure the canvas dimensions are adjusted dynamically
+function makeGameResponsive() {
+    const canvas = document.getElementById('gameCanvas');
+    canvas.width = window.innerWidth * 0.9; // 90% of the screen width
+    canvas.height = window.innerHeight * 0.5; // 50% of the screen height
+}
+
+// Ensure the high scores area is centered below the canvas
+function adjustHighScoresPosition() {
+    const highScoresElement = document.getElementById('highScores');
+    const canvas = document.getElementById('gameCanvas');
+
+    const canvasRect = canvas.getBoundingClientRect();
+    highScoresElement.style.position = 'absolute';
+    highScoresElement.style.top = `${canvasRect.bottom + 20}px`; // Position 20px below the canvas
+    highScoresElement.style.left = '50%';
+    highScoresElement.style.transform = 'translateX(-50%)';
+}
+
+// Ensure the canvas touch area works correctly
+function initializeCanvasTouchArea() {
+    const canvas = document.getElementById('gameCanvas');
+    canvas.style.touchAction = 'none';
+
+    canvas.addEventListener('touchstart', (event) => {
+        const rect = canvas.getBoundingClientRect();
+        const touch = event.touches[0];
+        const x = touch.clientX - rect.left;
+        const y = touch.clientY - rect.top;
+
+        // Check if the touch is within the canvas bounds
+        if (x >= 0 && x <= rect.width && y >= 0 && y <= rect.height) {
+            if (!gameStarted) {
+                gameStarted = true;
+                if (!isMusicPlaying) {
+                    audio.play();
+                    musicToggleButton.textContent = '🔊';
+                    isMusicPlaying = true;
+                }
+            }
+        }
+    });
+
+    canvas.addEventListener('touchmove', handleTouch);
+}
+
+window.addEventListener('resize', () => {
+    makeGameResponsive();
+    adjustHighScoresPosition();
+});
+
+// Export functions for testing purposes
 if (typeof module !== 'undefined' && module.exports) {
     module.exports = {
         initializeCanvas,
@@ -431,8 +443,6 @@ if (typeof module !== 'undefined' && module.exports) {
         drawHighScores,
         loadHighScores,
         getHighScores,
-        createMultitouchControls,
-        handleTouch,
-        direction,
+        handleTouch
     };
 }

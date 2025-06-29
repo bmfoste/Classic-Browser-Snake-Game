@@ -23,3 +23,20 @@ canvas {
     display: block;
     margin: 20px auto;
 }
+
+
+/* Make the high scores area responsive */
+
+#highScores {
+    position: absolute;
+    bottom: 10%;
+    left: 50%;
+    transform: translateX(-50%);
+    width: 90%;
+    max-width: 400px;
+    text-align: center;
+    font-family: Arial, sans-serif;
+    font-size: 16px;
+    color: black;
+    margin-top: 20px;
+}
